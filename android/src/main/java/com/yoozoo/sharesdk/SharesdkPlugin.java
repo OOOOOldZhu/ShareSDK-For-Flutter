@@ -74,6 +74,7 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
                 //IOS only
                 break;
             case PluginMethodGetUserInfo:
+                android.util.Log.d("SharesdkPlugin", "java --------------->  getUserInfoWithArgs()  ");
                 getUserInfoWithArgs(call, result);
                 break;
             case PluginMethodRegist:
@@ -486,21 +487,22 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
     private void getUserInfoWithArgs(MethodCall call, Result result) {
         HashMap<String, Object> params = call.arguments();
         String num = String.valueOf(params.get("platform"));
+        Log.d("SharesdkPlugin", "num = "+num);
         String platStr = Utils.platName(num);
+        Log.d("SharesdkPlugin", "platStr = "+platStr);
         Platform platName = ShareSDK.getPlatform(platStr);
+        Log.e("SharesdkPlugin", " platName = " + platName + " ====> " + call.arguments.toString());
         doUserInfo(platName, result);
-        Log.e("SharesdkPlugin", " platName " + platName + " ====> " + call.arguments.toString());
     }
 
 
     private void doUserInfo(Platform platform,final Result result) {
         if (platform != null) {
-            platform.showUser(null);
             platform.setPlatformActionListener(new PlatformActionListener() {
                 @Override
                 public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
 
-
+                    Log.e("SharesdkPlugin", " onComplete  。 。 。  ");
                     String text = StrUtils.format("", hashMap);
                     HashMap<String, Object> userMap = new HashMap<>();
                     userMap.put("user", hashMap);
@@ -515,6 +517,7 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
 
                 @Override
                 public void onError(Platform platform, int i, Throwable throwable) {
+                    Log.e("SharesdkPlugin", " onError  。 。 。  "+throwable);
                     HashMap<String, Object> map = new HashMap<>();
                     map.put("state", 2);
 
@@ -534,12 +537,14 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
 
                 @Override
                 public void onCancel(Platform platform, int i) {
+                    Log.e("SharesdkPlugin", " onCancel  。 。 。  ");
                     Map<String, Object> map = new HashMap<>();
                     map.put("state", 3);
                     result.success(map);
                     //result.error(null, null, map);
                 }
             });
+            platform.showUser(null);
         }
     }
 
