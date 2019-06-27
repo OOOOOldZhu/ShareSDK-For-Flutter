@@ -533,7 +533,7 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
                 @Override
                 public void onError(Platform platform, int i, Throwable throwable) {
                     Log.d("shareSDK_Plugin", "原生 onError: - - - - - - - - - - - - - - > "+throwable);
-                    HashMap<String, Object> map = new HashMap<>();
+                    final HashMap<String, Object> map = new HashMap<>();
                     map.put("state", 2);
 
                     HashMap<String, Object> errorMap = new HashMap<>();
@@ -546,16 +546,26 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
                         errorMap.put("error", String.valueOf(throwable));
                     }
                     map.put("error", errorMap);
-                    result.success(map);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            result.success(map);
+                        }
+                    });
                     //result.error(null, null, map);
                 }
 
                 @Override
                 public void onCancel(Platform platform, int i) {
                     Log.d("shareSDK_Plugin", "onCancel: 用户取消- - - - - - - - - - - - - - >");
-                    Map<String, Object> map = new HashMap<>();
+                    final  Map<String, Object> map = new HashMap<>();
                     map.put("state", 3);
-                    result.success(map);
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            result.success(map);
+                        }
+                    });
                     //result.error(null, null, map);
                 }
             });
