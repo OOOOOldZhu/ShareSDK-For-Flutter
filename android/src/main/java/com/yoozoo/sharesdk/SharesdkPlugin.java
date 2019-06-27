@@ -1,5 +1,7 @@
 package com.yoozoo.sharesdk;
 
+import android.os.Handler;
+import android.os.Looper;
 import android.text.TextUtils;
 import android.util.Log;
 import com.mob.MobSDK;
@@ -21,6 +23,10 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.PluginRegistry;
+import cn.sharesdk.wechat.moments.WechatMoments;
+import cn.sharesdk.facebook.Facebook;
+import cn.sharesdk.sina.weibo.SinaWeibo;
+import cn.sharesdk.twitter.Twitter;
 
 /**
  * SharesdkPlugin
@@ -54,8 +60,10 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
         eventChannel.setStreamHandler(new SharesdkPlugin());
     }
 
+    private Handler handler;
     @Override
     public void onMethodCall(MethodCall call, Result result) {
+        handler = new Handler(Looper.getMainLooper());
         switch (call.method) {
             case PluginMethodGetVersion:
                 break;
@@ -71,10 +79,9 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
                 break;
             case PluginMethodCancelAuth:
                 Log.e("SharesdkPlugin", " PluginMethodCancelAuth IOS platform only");
-                //IOS only
+                doLogout();
                 break;
             case PluginMethodGetUserInfo:
-                android.util.Log.d("SharesdkPlugin", "java --------------->  getUserInfoWithArgs()  ");
                 getUserInfoWithArgs(call, result);
                 break;
             case PluginMethodRegist:
@@ -487,37 +494,45 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
     private void getUserInfoWithArgs(MethodCall call, Result result) {
         HashMap<String, Object> params = call.arguments();
         String num = String.valueOf(params.get("platform"));
-        Log.d("SharesdkPlugin", "num = "+num);
         String platStr = Utils.platName(num);
-        Log.d("SharesdkPlugin", "platStr = "+platStr);
         Platform platName = ShareSDK.getPlatform(platStr);
-        Log.e("SharesdkPlugin", " platName = " + platName + " ====> " + call.arguments.toString());
         doUserInfo(platName, result);
+        Log.e("SharesdkPlugin", " platName " + platName + " ====> " + call.arguments.toString());
     }
 
 
     private void doUserInfo(Platform platform,final Result result) {
         if (platform != null) {
+
             platform.setPlatformActionListener(new PlatformActionListener() {
                 @Override
                 public void onComplete(Platform platform, int i, HashMap<String, Object> hashMap) {
-
-                    Log.e("SharesdkPlugin", " onComplete  。 。 。  ");
-                    String text = StrUtils.format("", hashMap);
-                    HashMap<String, Object> userMap = new HashMap<>();
-                    userMap.put("user", hashMap);
-                    userMap.put("state", 1);
-                    if (platform.getDb().exportData() != null) {
-                        hashMap.put("dbInfo", platform.getDb().exportData());
+                    try{
+                        Log.d("shareSDK_Plugin", "onComplete: - - - - - - - - - - - - - - > ");
+                        String text = StrUtils.format("", hashMap);
+                        Log.d("shareSDK_Plugin", "onComplete: - - - - - - - - - - - - - - > "+text);
+                        final HashMap<String, Object> userMap = new HashMap<>();
+                        userMap.put("user", hashMap);
+                        userMap.put("state", 1);
+                        if (platform.getDb().exportData() != null) {
+                            hashMap.put("dbInfo", platform.getDb().exportData());
+                        }
+                        //新增token
+                        hashMap.put("token", platform.getDb().getToken());
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                result.success(userMap);
+                            }
+                        });
+                    }catch (Exception e){
+                        Log.e("shareSDK_Plugin", "onComplete中的报错 : "+e);
                     }
-                    //新增token
-                    hashMap.put("token", platform.getDb().getToken());
-                    result.success(userMap);
                 }
 
                 @Override
                 public void onError(Platform platform, int i, Throwable throwable) {
-                    Log.e("SharesdkPlugin", " onError  。 。 。  "+throwable);
+                    Log.d("shareSDK_Plugin", "原生 onError: - - - - - - - - - - - - - - > "+throwable);
                     HashMap<String, Object> map = new HashMap<>();
                     map.put("state", 2);
 
@@ -537,17 +552,54 @@ public class SharesdkPlugin implements EventChannel.StreamHandler,MethodCallHand
 
                 @Override
                 public void onCancel(Platform platform, int i) {
-                    Log.e("SharesdkPlugin", " onCancel  。 。 。  ");
+                    Log.d("shareSDK_Plugin", "onCancel: 用户取消- - - - - - - - - - - - - - >");
                     Map<String, Object> map = new HashMap<>();
                     map.put("state", 3);
                     result.success(map);
                     //result.error(null, null, map);
                 }
             });
+            //判断指定平台是否已经完成授权
+//            if (platform.isAuthValid() && activity != null) {
+//                String json = platform.getDb().exportData();
+//                Log.i("zhu", "onComplete1 : " + json);
+//                activity.runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        callbackContext.success(json);
+//                    }
+//                });
+//                return;
+//            }
+            // true不使用SSO授权，false使用SSO授权
+//            platform.SSOSetting(true);
+//            //获取用户资料
+//            if(platform.getName().equalsIgnoreCase("wechat")){
+//                platform.authorize(null);
+//            }else {
+//                platform.showUser(null);
+//            }
             platform.showUser(null);
         }
     }
-
+    private void doLogout(){
+        Platform platform = ShareSDK.getPlatform(Facebook.NAME);
+        if (platform.isAuthValid()) {
+            platform.removeAccount(true);
+        }
+        platform = ShareSDK.getPlatform(SinaWeibo.NAME);
+        if (platform.isAuthValid()) {
+            platform.removeAccount(true);
+        }
+        platform = ShareSDK.getPlatform(Twitter.NAME);
+        if (platform.isAuthValid()) {
+            platform.removeAccount(true);
+        }
+        platform = ShareSDK.getPlatform(WechatMoments.NAME);
+        if (platform.isAuthValid()) {
+            platform.removeAccount(true);
+        }
+    }
 
     /**
      * java层给flutter层发送消息,写了但是没用到，留着吧

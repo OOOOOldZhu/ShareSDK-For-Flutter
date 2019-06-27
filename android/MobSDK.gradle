@@ -1,8 +1,8 @@
 apply plugin: 'com.mob.sdk'
 
 MobSDK {
-    appKey "moba6b6c6d6"
-    appSecret "b89d2427a3bc7ad1aea1e1e8c1d36bf3"
+    appKey "28c038beb20d6"
+    appSecret "e1d6dd766e21ac7fbdd25b91efd5f712"
 
     ShareSDK {
 
@@ -11,9 +11,9 @@ MobSDK {
             SinaWeibo {
                 id 1
                 sortId 1
-                appKey "568898243"
-                appSecret "38a4f8204cc784f81f9f0daaf31e02e3"
-                callbackUri "http://www.sharesdk.cn"
+                appKey "206863495"
+                appSecret "d64b22765519e722030f332d7f825ef5"
+                callbackUri "https://www.microduino.cn/3rd/weibo/callback"
                 shareByAppClient true
                 enable true
             }
@@ -51,8 +51,8 @@ MobSDK {
             Wechat {
                 id 4
                 sortId 4
-                appId "wx4868b35061f87885"
-                appSecret "64020361b8ec4c99936c0e3999a9f249"
+                appId "wx70ae63195d951329"
+                appSecret "ea3431d950273750906fe3314b247fc8"
                 userName "gh_afb25ac019c9"
                 path "pages/index/index.html?id=1"
                 withShareTicket true
@@ -64,8 +64,8 @@ MobSDK {
             WechatMoments {
                 id 5
                 sortId 5
-                appId "wx4868b35061f87885"
-                appSecret "64020361b8ec4c99936c0e3999a9f249"
+                appId "wx70ae63195d951329"
+                appSecret "ea3431d950273750906fe3314b247fc8"
                 bypassApproval false
                 enable true
             }
@@ -73,8 +73,8 @@ MobSDK {
             WechatFavorite {
                 id 6
                 sortId 6
-                appId "wx4868b35061f87885"
-                appSecret "64020361b8ec4c99936c0e3999a9f249"
+                appId "wx70ae63195d951329"
+                appSecret "ea3431d950273750906fe3314b247fc8"
                 bypassApproval false
                 enable true
             }
@@ -102,9 +102,9 @@ MobSDK {
             Facebook {
                 id 8
                 sortId 8
-                appKey "1412473428822331"
-                appSecret "a42f4f3f867dc947b9ed6020c2e93558"
-                callbackUri "https://mob.com"
+                appKey "260836567913723"
+                appSecret "6e0bedbbbc9008de092895a7d8635d1e"
+                callbackUri "https://www.microduino.cn/3rd/weibo/callback"
                 shareByAppClient true
                 enable true
             }

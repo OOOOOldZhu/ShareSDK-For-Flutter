@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/ShareSDK-For-Flutter.iml" filepath="$PROJECT_DIR$/.idea/ShareSDK-For-Flutter.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/ShareSDK-For-Flutter.iml" filepath="$PROJECT_DIR$/.idea/ShareSDK-For-Flutter.iml" />
       <module fileurl="file://$PROJECT_DIR$/sharesdk_flutter.iml" filepath="$PROJECT_DIR$/sharesdk_flutter.iml" />
       <module fileurl="file://$PROJECT_DIR$/sharesdk_flutter_android.iml" filepath="$PROJECT_DIR$/sharesdk_flutter_android.iml" />
     </modules>
